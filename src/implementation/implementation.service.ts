@@ -1,13 +1,16 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ProductService } from "../product/product.service";
-import { ProductExtrasService } from "../product-extras/product-extras.service";
-import { GetProductInfoDto } from "./dto/get-product-info.dto";
+import { ProductService } from '../product/product.service';
+import { ProductExtrasService } from '../product-extras/product-extras.service';
+import { GetProductInfoDto } from './dto/get-product-info.dto';
+import { AxiosRequestConfig } from 'axios';
+import { ApiService } from '../api/api.service';
 
 @Injectable()
 export class ImplementationService {
 
     constructor(private productService: ProductService,
-                private productExtrasService: ProductExtrasService) {}
+                private productExtrasService: ProductExtrasService,
+                private apiService: ApiService) {}
 
     /**
      * Function to get whole product info, this merges, Product, ProductExtras and external API info
@@ -38,14 +41,33 @@ export class ImplementationService {
             // get product extras
             const productExtras = await this.productExtrasService.getProductExtrasByProductId(productId);
 
+            // get product info by external API
+            const mockProductId = 1;
+            const endpoint = `/api/v1/products/${mockProductId}`;
+            const request: AxiosRequestConfig = {
+                method: "GET",
+                url: `${process.env.EXTERNAL_PRODUCT_API}${endpoint}`
+            };
+            const externalProductInfoResponse = await this.apiService.invokeHttpCall(request);
+
+            // prepare response
+            let data = {
+                product: productInfo,
+                productExtras: productExtras,
+                externalApiInfo: {}
+            };
+            if(externalProductInfoResponse.status === HttpStatus.OK){
+                data.externalApiInfo = {
+                    info: externalProductInfoResponse.data.external_api_info || '',
+                    externalProductId: externalProductInfoResponse.data.productId || ''
+                }
+            }
             return {
                 success: true,
                 code: HttpStatus.OK,
-                data: {
-                    productInfo,
-                    productExtras
-                },
+                data
             };
+
         } catch (e) {
             return {
                 success: false,

@@ -3,7 +3,9 @@ import { ProductModule } from './product/product.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProductExtrasModule } from './product-extras/product-extras.module';
-import {LoggerMiddleware} from "./common/middleware/logger.middleware";
+import { LoggerMiddleware } from "./common/middleware/logger.middleware";
+import { ImplementationModule } from './implementation/implementation.module';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -11,6 +13,8 @@ import {LoggerMiddleware} from "./common/middleware/logger.middleware";
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.DB_CONNECTION),
     ProductExtrasModule,
+    ImplementationModule,
+    ApiModule,
   ],
 })
 export class AppModule implements NestModule{
