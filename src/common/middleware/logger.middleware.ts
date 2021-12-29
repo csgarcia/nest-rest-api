@@ -7,7 +7,6 @@ export class LoggerMiddleware implements NestMiddleware {
     private logger = new Logger('HTTP');
     use(req: Request, res: Response, next: NextFunction): any {
         const start = Date.now();
-        console.log(req);
         const { method, baseUrl } = req;
         res.on('close', () => {
             const { statusCode } = res;

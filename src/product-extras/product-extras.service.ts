@@ -5,38 +5,53 @@ import {
   ProductExtrasDocument,
 } from './schema/product-extras.schema';
 import { Model } from 'mongoose';
+import { NewProductExtrasDto } from "./dto/new-product-extras.dto";
+import { ProductService } from "../product/product.service";
 
 @Injectable()
 export class ProductExtrasService {
   constructor(
-    @InjectModel(ProductExtras.name)
-    private productExtraModel: Model<ProductExtrasDocument>,
+      @InjectModel(ProductExtras.name) private productExtraModel: Model<ProductExtrasDocument>,
+      private productService: ProductService
   ) {}
 
   /**
    * Function to save product extras
-   * @param {Object[]} extras
-   * @param {string} extras.name
-   * @param {string} extras.description
-   * @param {string} productId - _id from collection Product
+   * @param {Object[]} newProductExtrasDto.extras
+   * @param {string} newProductExtrasDto.extras.name
+   * @param {string} newProductExtrasDto.extras.description
+   * @param {string} newProductExtrasDto.productId - _id from collection Product
    */
-  async saveExtras(extras, productId) {
+  async saveExtras(newProductExtrasDto: NewProductExtrasDto) {
     try {
+      const { productId, extras } = newProductExtrasDto;
       if (!productId) {
         return {
           success: false,
-          code: 400,
+          code: HttpStatus.BAD_REQUEST,
           data: { message: 'Product Id is missing' },
         };
       }
+      // check extras validations
       const validations = this.checkExtrasParams(extras);
       if (validations.hasError) {
         return {
           success: false,
-          code: 400,
+          code: HttpStatus.BAD_REQUEST,
           data: { message: validations.messageError },
         };
       }
+
+      // check if product id exists
+      const existsProduct = await this.productService.checkIfProductExistsById(productId);
+      if(!existsProduct){
+        return {
+          success: false,
+          code: HttpStatus.NOT_FOUND,
+          data: { message: "Product was not found for given product id" },
+        };
+      }
+
       // concat productId for all extras
       extras.forEach((element) => {
         element.productId = productId;
@@ -50,7 +65,7 @@ export class ProductExtrasService {
     } catch (e) {
       return {
         success: false,
-        code: 500,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
         data: {
           message: `Error in saveExtras, ${e.message}`,
         },

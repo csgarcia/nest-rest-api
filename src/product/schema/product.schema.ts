@@ -21,4 +21,5 @@ export class Product {
   enabled: boolean;
 }
 
-export const ProductSchema = SchemaFactory.createForClass(Product);
+export const ProductSchema = SchemaFactory.createForClass(Product)
+
