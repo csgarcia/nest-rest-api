@@ -3,7 +3,6 @@ import { ProductService } from '../product.service';
 import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { ProductDocument } from '../schema/product.schema';
-import clearAllMocks = jest.clearAllMocks;
 
 describe('** ProductService Tests **', () => {
   let productService: ProductService;
@@ -33,7 +32,7 @@ describe('** ProductService Tests **', () => {
     productModel = module.get<Model<ProductDocument>>(getModelToken('Product'));
   });
 
-  afterEach(() => clearAllMocks());
+  afterEach(() => jest.clearAllMocks());
 
   describe('Save Product Tests', () => {
     it('should return success false and code 400 if post product params are missing', async () => {

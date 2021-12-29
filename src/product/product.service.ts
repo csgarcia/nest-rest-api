@@ -19,7 +19,7 @@ export class ProductService {
    */
   async saveProduct(productData) {
     try {
-      const { sku, name, description = '', price } = productData;
+      const { sku, name, description, price } = productData;
       // validate params
       if (!sku || !name || !price) {
         return {
