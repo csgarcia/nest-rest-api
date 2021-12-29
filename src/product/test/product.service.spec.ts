@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { ProductDocument } from '../schema/product.schema';
 import { NewProductDto } from '../dto/new-product.dto';
+import {UpdateProductDto} from "../dto/update-product.dto";
 
 describe('** ProductService Tests **', () => {
   let productService: ProductService;
@@ -22,6 +23,7 @@ describe('** ProductService Tests **', () => {
             find: jest.fn(),
             findOne: jest.fn(),
             findById: jest.fn(),
+            findByIdAndUpdate: jest.fn(),
             update: jest.fn(),
             create: jest.fn(),
             remove: jest.fn(),
@@ -57,7 +59,6 @@ describe('** ProductService Tests **', () => {
         sku: 'someSku',
       }));
     });
-
     it('should return null if function if some internal error is found ', async () => {
       const mockProductId = "someId";
       productModel.findById = jest.fn().mockImplementation(() => {
@@ -66,10 +67,73 @@ describe('** ProductService Tests **', () => {
       const response =  await productService.checkIfProductExistsById(mockProductId);
       expect(response).toEqual(null);
     });
+  });
 
-  })
+  describe('updateProduct Tests', () => {
+    it('should return success false and code 400 if put product params are missing', async () => {
+      const mockProductId = "someId";
+      const mockUpdateProduct: UpdateProductDto = {
+        name: '',
+        description: '',
+        price: 10,
+      };
+      const response = await productService.updateProduct(mockProductId, mockUpdateProduct);
+      expect(response.success).toEqual(false);
+      expect(response.code).toEqual(400);
+    });
+    it('should return success false and code 404 if product does not exist ', async() => {
+      const mockProductId = "someMissingId";
+      const mockUpdateProduct: UpdateProductDto = {
+        name: 'someProductName',
+        description: 'someProductDescription',
+        price: 10,
+      };
+      productService.checkIfProductExistsById = jest.fn().mockResolvedValue(null);
+      const response = await productService.updateProduct(mockProductId, mockUpdateProduct);
+      expect(response.success).toEqual(false);
+      expect(response.code).toEqual(404);
+    });
+    it('should return success false and code 500 if some internal error is found', async() => {
+      const mockProductId = "someId";
+      const mockUpdateProduct: UpdateProductDto = {
+        name: 'someProductName',
+        description: 'someProductDescription',
+        price: 10,
+      };
+      productService.checkIfProductExistsById = jest.fn().mockImplementation(() => {
+        throw new Error('MOCK ERROR UPDATE PRODUCT');
+      });
+      const response = await productService.updateProduct(mockProductId, mockUpdateProduct);
+      expect(response.success).toEqual(false);
+      expect(response.code).toEqual(500);
+    });
+    it('should return success true and code 200 product is updated successfully', async() => {
+      const mockProductId = "someUpdatedId";
+      const mockUpdateProduct: UpdateProductDto = {
+        name: 'someProductName',
+        description: 'someProductDescription',
+        price: 10,
+      };
+      productService.checkIfProductExistsById = jest.fn().mockResolvedValue({
+        _id: 'someUpdatedId'
+      });
+      productModel.findByIdAndUpdate = jest.fn().mockResolvedValue({
+        _id: 'someUpdatedId',
+        enabled: true,
+        price: 12.5,
+        description: 'SomeData',
+        name: 'Product name updated',
+        sku: 'SKU123777',
+        createdAt: '2021-12-29T04:47:11.476Z',
+        updatedAt: '2021-12-29T05:57:30.318Z'
+      });
+      const response = await productService.updateProduct(mockProductId, mockUpdateProduct);
+      expect(response.success).toEqual(true);
+      expect(response.code).toEqual(200);
+    });
+  });
 
-  describe('Save Product Tests', () => {
+  describe('saveProduct Tests', () => {
     it('should return success false and code 400 if post product params are missing', async () => {
       const mockNewProduct: NewProductDto = {
         sku: '',
@@ -81,7 +145,6 @@ describe('** ProductService Tests **', () => {
       expect(response.success).toEqual(false);
       expect(response.code).toEqual(400);
     });
-
     it('should return success false and code 400 if product already exists', async () => {
       const mockNewProduct: NewProductDto = {
         sku: 'someSku',
@@ -101,7 +164,6 @@ describe('** ProductService Tests **', () => {
       expect(response.success).toEqual(false);
       expect(response.code).toEqual(400);
     });
-
     it('should return success false and code 500 if some internal error is found', async () => {
       const mockNewProduct: NewProductDto = {
         sku: 'someSku',
@@ -117,7 +179,6 @@ describe('** ProductService Tests **', () => {
       expect(response.success).toEqual(false);
       expect(response.code).toEqual(500);
     });
-
     it('should return success false and code 500 if product was not created', async () => {
       const mockNewProduct: NewProductDto = {
         sku: 'someSku',
@@ -131,7 +192,6 @@ describe('** ProductService Tests **', () => {
       expect(response.success).toEqual(false);
       expect(response.code).toEqual(500);
     });
-
     it('should return success true and code 201 if product is created', async () => {
       const mockNewProduct: NewProductDto = {
         sku: 'someSku',

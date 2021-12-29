@@ -5,7 +5,8 @@ import {
   ProductExtrasDocument,
 } from './schema/product-extras.schema';
 import { Model } from 'mongoose';
-import { NewProductExtrasDto } from "./dto/new-product-extras.dto";
+import { NewProductExtrasDto } from './dto/new-product-extras.dto';
+import { UpdateProductExtrasDto } from './dto/update-product-extras.dto';
 import { ProductService } from "../product/product.service";
 
 @Injectable()
@@ -14,6 +15,62 @@ export class ProductExtrasService {
       @InjectModel(ProductExtras.name) private productExtraModel: Model<ProductExtrasDocument>,
       private productService: ProductService
   ) {}
+
+  async updateExtra(productExtraId, updateProductExtrasDto: UpdateProductExtrasDto) {
+    try {
+      // check extras validations
+      const validations = this.checkExtrasParams([updateProductExtrasDto]);
+      if (validations.hasError) {
+        return {
+          success: false,
+          code: HttpStatus.BAD_REQUEST,
+          data: { message: validations.messageError },
+        };
+      }
+      const { name, description } = updateProductExtrasDto;
+
+      // check if product exists
+      const existsProductExtra = await this.checkIfProductExtraExistsById(productExtraId);
+      if(!existsProductExtra){
+        return {
+          success: false,
+          code: HttpStatus.NOT_FOUND,
+          data: { message: "Product extra was not found for given product extra id" },
+        };
+      }
+      // update data
+      await this.productExtraModel.findByIdAndUpdate(productExtraId, {
+        name, description
+      });
+      return {
+        success: true,
+        code: HttpStatus.OK,
+        data: {
+          message: "Product extra updated successfully",
+        },
+      };
+    } catch (e) {
+      return {
+        success: false,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        data: {
+          message: `Error in updateExtra, ${e.message}`,
+        },
+      };
+    }
+  }
+
+  /**
+   * Function to check if product exists by _id
+   * @param id - _id of collection Product
+   */
+  async checkIfProductExtraExistsById(id: string) {
+    try {
+      return await this.productExtraModel.findById(id);
+    } catch (e) {
+      return null;
+    }
+  }
 
   /**
    * Function to save product extras
