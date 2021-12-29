@@ -4,7 +4,7 @@ import { Document } from 'mongoose';
 export type ProductExtrasDocument = ProductExtras & Document;
 
 @Schema({
-  collection: 'Product_extras',
+  collection: 'ProductExtras',
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
   versionKey: false,
 })
@@ -12,9 +12,9 @@ export class ProductExtras {
   @Prop({ required: true })
   productId: string;
   @Prop({ required: true })
-  extraName: string;
+  name: string;
   @Prop({ required: true })
-  price: number;
+  description: string;
   @Prop({ default: true })
   enabled: boolean;
 }

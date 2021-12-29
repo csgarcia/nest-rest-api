@@ -1,9 +1,17 @@
 import { Module } from '@nestjs/common';
-import { ProductExtrasController } from './product-extras.controller';
 import { ProductExtrasService } from './product-extras.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import {
+  ProductExtras,
+  ProductExtrasSchema,
+} from './schema/product-extras.schema';
 
 @Module({
-  controllers: [ProductExtrasController],
+  imports: [
+    MongooseModule.forFeatureAsync([
+      { name: ProductExtras.name, useFactory: () => ProductExtrasSchema },
+    ]),
+  ],
   providers: [ProductExtrasService],
   exports: [ProductExtrasService],
 })
