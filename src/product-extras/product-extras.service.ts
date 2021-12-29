@@ -16,6 +16,13 @@ export class ProductExtrasService {
       private productService: ProductService
   ) {}
 
+  /**
+   * Function to update a product extra information
+   * @param {string} productExtraId
+   * @param {Object} updateProductExtrasDto
+   * @param {string} updateProductExtrasDto.extras.name
+   * @param {string} updateProductExtrasDto.extras.description
+   */
   async updateExtra(productExtraId, updateProductExtrasDto: UpdateProductExtrasDto) {
     try {
       // check extras validations
@@ -57,6 +64,19 @@ export class ProductExtrasService {
           message: `Error in updateExtra, ${e.message}`,
         },
       };
+    }
+  }
+
+  /**
+   * Function to get product extras by product id and enabled ones
+   * @param {string} productId - _id of collection Product
+   */
+  async getProductExtrasByProductId(productId) {
+    try {
+      // no matched queries returns empty array
+      return await this.productExtraModel.find({ productId, enabled: true });
+    } catch (e) {
+      return [];
     }
   }
 

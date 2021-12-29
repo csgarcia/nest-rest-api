@@ -52,6 +52,33 @@ describe('ProductExtrasService', () => {
 
   afterEach(() => jest.clearAllMocks());
 
+  describe('getProductExtrasByProductId Tests', () => {
+    it('should return valid Product extras list if it exists', async() => {
+      const mockProductId = "someId";
+      productExtrasModel.find = jest.fn().mockResolvedValue([{
+        _id: 'someId',
+        enabled: true,
+        description: 'NA',
+        name: 'someName',
+      }]);
+      const response = await productExtrasService.getProductExtrasByProductId(mockProductId);
+      expect(response[0]).toEqual(expect.objectContaining({
+        enabled: true,
+        name: 'someName',
+        _id: 'someId',
+        description: 'NA',
+      }));
+    });
+    it('should return empty array if some internal error is found ', async () => {
+      const mockProductId = "someId";
+      productExtrasModel.find = jest.fn().mockImplementation(() => {
+        throw new Error('MOCK ERROR FIND');
+      });
+      const response = await productExtrasService.getProductExtrasByProductId(mockProductId);
+      expect(response).toEqual([]);
+    });
+  });
+
   describe('checkIfProductExtraExistsById Tests', () => {
     it('should return valid Product extra if it exists', async() => {
       const mockProductId = "someId";
@@ -69,7 +96,7 @@ describe('ProductExtrasService', () => {
         description: 'NA',
       }));
     });
-    it('should return null if function if some internal error is found ', async () => {
+    it('should return null if some internal error is found ', async () => {
       const mockProductId = "someId";
       productExtrasModel.findById = jest.fn().mockImplementation(() => {
         throw new Error('MOCK ERROR FIND BY ID');
