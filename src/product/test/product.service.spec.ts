@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
 import { ProductDocument } from '../schema/product.schema';
 import { NewProductDto } from '../dto/new-product.dto';
-import {UpdateProductDto} from "../dto/update-product.dto";
+import { UpdateProductDto } from '../dto/update-product.dto';
 
 describe('** ProductService Tests **', () => {
   let productService: ProductService;

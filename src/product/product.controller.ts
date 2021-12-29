@@ -13,7 +13,7 @@ export class ProductController {
     @Post('/')
     async saveProduct(@Res() res: Response, @Body() newProductDto: NewProductDto) {
         const response = await this.productService.saveProduct(newProductDto);
-        res.status(response.code).json(response.data || {});
+        res.status(response.code).json(response.data);
     }
 
     @Version('1')
@@ -21,7 +21,7 @@ export class ProductController {
     async updateProduct(@Res() res: Response, @Param() params,
                         @Body() updateProductDto: UpdateProductDto) {
         const response = await this.productService.updateProduct(params.productId, updateProductDto);
-        res.status(response.code).json(response.data || {});
+        res.status(response.code).json(response.data);
     }
 
 }

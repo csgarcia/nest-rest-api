@@ -13,15 +13,15 @@ export class ProductExtrasController {
     @Post('/')
     async saveProductExtras(@Res() res: Response, @Body() newProductExtrasDto: NewProductExtrasDto) {
         const response = await this.productExtrasService.saveExtras(newProductExtrasDto);
-        res.status(response.code).json(response.data || {});
+        res.status(response.code).json(response.data);
     }
 
     @Version('1')
     @Put('/:productExtraId')
-    async updateProduct(@Res() res: Response, @Param() params,
+    async updateProductExtras(@Res() res: Response, @Param() params,
                         @Body() updateProductExtrasDto: UpdateProductExtrasDto) {
         const response = await this.productExtrasService.updateExtra(params.productExtraId, updateProductExtrasDto);
-        res.status(response.code).json(response.data || {});
+        res.status(response.code).json(response.data);
     }
 
 }

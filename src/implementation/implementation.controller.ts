@@ -12,7 +12,7 @@ export class ImplementationController {
     @Get('/:productId')
     async getProductInfo(@Res() res: Response, @Param() getProductInfoDto: GetProductInfoDto) {
         const response = await this.implementationService.getProductInfo(getProductInfoDto);
-        res.status(response.code).json(response.data || {});
+        res.status(response.code).json(response.data);
     }
 
 }
