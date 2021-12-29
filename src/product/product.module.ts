@@ -8,7 +8,7 @@ import { ProductController } from './product.controller';
   imports: [
     MongooseModule.forFeatureAsync([
       { name: Product.name, useFactory: () => ProductSchema },
-    ]),
+    ])
   ],
   providers: [ProductService],
   exports: [ProductService],

@@ -1,16 +1,15 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import {Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from './schema/product.schema';
 import { Model } from 'mongoose';
 import { NewProductDto } from "./dto/new-product.dto";
-import {UpdateProductDto} from "./dto/update-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
 
 @Injectable()
 export class ProductService {
   constructor(
-    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>
   ) {}
-
 
   /**
    * Function to update product information
