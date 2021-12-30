@@ -1,18 +1,34 @@
 ## Description
 
 Project build for **Tekton** challenge, this is based on [Nest](https://github.com/nestjs/nest) framework, 
-Please make sure to check the following steps and information to run the project without issues 
+Please make sure to check the following steps and information to run the project locally without issues 
+
+## Dependencies
+Mongodb 4.2 \
+Node version v14.18.0
 
 ## Installation and configuration
-Install dependencies 
+
+###### Database configuration
+Create a database in local enviroment with the following data
+* DB name: **tekton**
+* Create a user for database
+  * username: **tekton**
+  * password: **tekton**
+  * role: **dbOwner**            
+
+Install npm dependencies 
 ```bash
 $ npm install
 ```
-Enviroment
+###### Environment
+Create .env file on project root with the following data:
 
 | Variable | Dev value | Description
 | :---: | :---: | :---: |
-| FOO | TODO | TODO add env vars and description |
+| DB_CONNECTION | mongodb://tekton:tekton@localhost/tekton | Mongodb string connection |
+| EXTERNAL_PRODUCT_API | https://61cc0fd9198df60017aebe51.mockapi.io | External api to get product mock data |
+| TOKEN | someToken | Token to check on headers requests to api usage |
 
 ## Running the app
 ```bash
@@ -26,11 +42,16 @@ $ npm run start:dev
 ```bash
 # unit tests
 $ npm run test
-# test coverage
+# test coverage (considered for controller and services)
 $ npm run test:cov
 ```
 
+About practices solving tekton challenge
+1. For logging, I implemented a middleware that write on a logs.txt file on root module (it's not necessary to create it manually)
+2. Check modules schemas to see properties to map in database
+3. There is an external http call in src/implementation/implementation.service.ts make sure to set the EXTERNAL_PRODUCT_API env var to correct usage
+4. all endpoints (except /health) use a middleware with a token, make sure headers uses a "token" property with TOKEN env var
+5. For cache, I used a nest implementation in memory, the packae is cache-manager
 
 ## Author
-
-  Carlos García, Senior Software Engineer.  
+Carlos García, Senior Software Engineer.  
