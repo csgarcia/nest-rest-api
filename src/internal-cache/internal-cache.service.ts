@@ -7,9 +7,9 @@ export class InternalCacheService {
 
     async setCacheDataFromProduct(productId, name, sku) {
         this.cacheManager.set(`${productId}-name`, name, { ttl: 600 }) // 600 seconds
-            .then(() => console.info('name stored in cache')).catch();
+            .then().catch();
         this.cacheManager.set(`${productId}-sku`, sku, { ttl: 600 }) // 600 seconds
-            .then(() => console.info('sku stored in cache')).catch();
+            .then().catch();
         return true;
     }
 

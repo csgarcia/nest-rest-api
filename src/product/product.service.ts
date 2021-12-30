@@ -83,10 +83,13 @@ export class ProductService {
     }
   }
 
+  /**
+   * Function to get cache product data by product id
+   * @param {string} productId
+   */
   async getCacheData(productId) {
     return await this.internalCacheService.getCacheDataFromProduct(productId);
   }
-
 
   /**
    * function to save product

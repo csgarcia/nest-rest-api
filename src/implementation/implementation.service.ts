@@ -55,7 +55,7 @@ export class ImplementationService {
                 cacheName,
                 cacheSku
             } = await this.productService.getCacheData(productId);
-            console.log(`cacheName: ${cacheName}, cacheSku: ${cacheSku}`);
+            // console.log(`cacheName: ${cacheName}, cacheSku: ${cacheSku}`);
 
             // prepare response
             let data = {
