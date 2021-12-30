@@ -7,6 +7,8 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthMiddleware } from './common/middleware/auth.middleware';
 import { ImplementationModule } from './implementation/implementation.module';
 import { ApiModule } from './api/api.module';
+import { TerminusModule } from '@nestjs/terminus';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { ApiModule } from './api/api.module';
     ProductExtrasModule,
     ImplementationModule,
     ApiModule,
+    TerminusModule
   ],
+  controllers: [HealthController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
@@ -24,7 +28,8 @@ export class AppModule implements NestModule {
         .apply(LoggerMiddleware)
         .forRoutes('*');
     consumer
-        .apply(AuthMiddleware) // exclude from here the healthy endpoint
+        .apply(AuthMiddleware)
+        .exclude('health') // no token needed to check health services
         .forRoutes('*');
   }
 }
