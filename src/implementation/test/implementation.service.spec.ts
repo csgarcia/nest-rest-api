@@ -19,7 +19,10 @@ describe('ImplementationService', () => {
         {
           provide: ProductService,
           useValue: {
-            checkIfProductExistsById: jest.fn()
+            checkIfProductExistsById: jest.fn(),
+            getCacheData: jest.fn().mockResolvedValue({
+              cacheName: undefined, cacheSku: undefined
+            })
           }
         },
         {
@@ -75,6 +78,46 @@ describe('ImplementationService', () => {
       expect(response.success).toEqual(false);
       expect(response.code).toEqual(500);
     });
+
+    it('should return success true and code 200 for valid product(cache name and sku) without extras and external api info',
+        async() => {
+          const getProductInfoDto: GetProductInfoDto = {
+            productId: 'someProductId'
+          };
+          productService.checkIfProductExistsById = jest.fn().mockResolvedValue({
+            "_id" : "someProductId",
+            "enabled" : true,
+            "price" : 12,
+            "description" : "Desc",
+            "name" : "DONT SHOW",
+            "sku" : "SKU1234"
+          });
+          productExtrasService.getProductExtrasByProductId = jest.fn().mockResolvedValue([]);
+          apiService.invokeHttpCall = jest.fn().mockResolvedValue({
+            data: {},
+            status: HttpStatus.NOT_FOUND,
+            statusText: 'No data found',
+          })
+          productService.getCacheData = jest.fn().mockResolvedValue({
+            cacheName: "CACHE NAME", cacheSku: "CACHE SKU"
+          })
+          const response = await service.getProductInfo(getProductInfoDto);
+          expect(response.success).toEqual(true);
+          expect(response.code).toEqual(200);
+          expect(response.data).toEqual(expect.objectContaining({
+            product: {
+              "_id" : "someProductId",
+              "enabled" : true,
+              "price" : 12,
+              "description" : "Desc",
+              "name" : "CACHE NAME",
+              "sku" : "CACHE SKU"
+            },
+            productExtras: [],
+            externalApiInfo: {}
+          }));
+        });
+
     it('should return success true and code 200 for valid product without extras and external api info',
         async() => {
           const getProductInfoDto: GetProductInfoDto = {
@@ -186,7 +229,6 @@ describe('ImplementationService', () => {
         statusText: 'No data',
       })
       const response = await service.getProductInfo(getProductInfoDto);
-      console.log(response);
       expect(response.success).toEqual(true);
       expect(response.code).toEqual(200);
       expect(response.data).toEqual(expect.objectContaining({
@@ -233,7 +275,6 @@ describe('ImplementationService', () => {
         statusText: 'No data',
       })
       const response = await service.getProductInfo(getProductInfoDto);
-      console.log(response);
       expect(response.success).toEqual(true);
       expect(response.code).toEqual(200);
       expect(response.data).toEqual(expect.objectContaining({

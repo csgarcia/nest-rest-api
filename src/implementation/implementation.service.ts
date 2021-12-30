@@ -50,9 +50,23 @@ export class ImplementationService {
             };
             const externalProductInfoResponse = await this.apiService.invokeHttpCall(request);
 
+            // get product data stored in cache
+            const {
+                cacheName,
+                cacheSku
+            } = await this.productService.getCacheData(productId);
+            console.log(`cacheName: ${cacheName}, cacheSku: ${cacheSku}`);
+
             // prepare response
             let data = {
-                product: productInfo,
+                product: {
+                    _id: productId,
+                    enabled: productInfo.enabled,
+                    price: productInfo.price,
+                    description: productInfo.description,
+                    name: !cacheName ? productInfo.name : cacheName,
+                    sku: !cacheSku ? productInfo.sku : cacheSku,
+                },
                 productExtras: productExtras,
                 externalApiInfo: {}
             };

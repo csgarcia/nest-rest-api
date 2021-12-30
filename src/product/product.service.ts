@@ -3,12 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from './schema/product.schema';
 import { Model } from 'mongoose';
 import { NewProductDto } from "./dto/new-product.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
+import { UpdateProductDto } from './dto/update-product.dto';
+import { InternalCacheService } from '../internal-cache/internal-cache.service';
 
 @Injectable()
 export class ProductService {
   constructor(
-    @InjectModel(Product.name) private productModel: Model<ProductDocument>
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
+    private internalCacheService: InternalCacheService
   ) {}
 
   /**
@@ -46,6 +48,11 @@ export class ProductService {
       await this.productModel.findByIdAndUpdate(productId, {
         name, price, description
       });
+
+      // updating product cache
+      this.internalCacheService.setCacheDataFromProduct(productId, name, existsProduct.sku)
+          .then().catch();
+
       return {
         success: true,
         code: HttpStatus.OK,
@@ -75,6 +82,11 @@ export class ProductService {
       return null;
     }
   }
+
+  async getCacheData(productId) {
+    return await this.internalCacheService.getCacheDataFromProduct(productId);
+  }
+
 
   /**
    * function to save product
@@ -123,12 +135,15 @@ export class ProductService {
           },
         };
       }
-
+      const productId = productCreated._id.toString();
+      // saving product info in cache
+      this.internalCacheService.setCacheDataFromProduct(productId, name, sku)
+          .then().catch();
       return {
         success: true,
         code: HttpStatus.CREATED,
         data: {
-          productId: productCreated._id.toString(),
+          productId,
         },
       };
 

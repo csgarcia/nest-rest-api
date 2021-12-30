@@ -5,10 +5,12 @@ import { getModelToken } from '@nestjs/mongoose';
 import { ProductDocument } from '../schema/product.schema';
 import { NewProductDto } from '../dto/new-product.dto';
 import { UpdateProductDto } from '../dto/update-product.dto';
+import { InternalCacheService } from '../../internal-cache/internal-cache.service';
 
 describe('** ProductService Tests **', () => {
   let productService: ProductService;
   let productModel: Model<ProductDocument>;
+  let internalCacheService: InternalCacheService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,9 +32,17 @@ describe('** ProductService Tests **', () => {
             exec: jest.fn(),
           },
         },
+        {
+          provide: InternalCacheService,
+          useValue: {
+            setCacheDataFromProduct: jest.fn().mockResolvedValue(null),
+            getCacheDataFromProduct: jest.fn()
+          }
+        }
       ],
     }).compile();
     productService = module.get<ProductService>(ProductService);
+    internalCacheService = module.get<InternalCacheService>(InternalCacheService);
     productModel = module.get<Model<ProductDocument>>(getModelToken('Product'));
   });
 
@@ -66,6 +76,19 @@ describe('** ProductService Tests **', () => {
       });
       const response =  await productService.checkIfProductExistsById(mockProductId);
       expect(response).toEqual(null);
+    });
+  });
+
+  describe('getCacheData Tests', () => {
+    it('should return cache data if it exists', async() => {
+      const mockProductId = '';
+      internalCacheService.getCacheDataFromProduct = jest.fn().mockResolvedValue({
+        cacheName: 'SomeNameCache', cacheSku: 'SomeNameSku'
+      });
+      const response = await productService.getCacheData(mockProductId);
+      expect(response).toEqual(expect.objectContaining({
+        cacheSku: 'SomeNameSku', cacheName: 'SomeNameCache'
+      }))
     });
   });
 

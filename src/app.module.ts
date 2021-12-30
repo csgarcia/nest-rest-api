@@ -1,4 +1,4 @@
-import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ProductModule } from './product/product.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -9,6 +9,7 @@ import { ImplementationModule } from './implementation/implementation.module';
 import { ApiModule } from './api/api.module';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health/health.controller';
+import { InternalCacheModule } from './internal-cache/internal-cache.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { HealthController } from './health/health.controller';
     ProductExtrasModule,
     ImplementationModule,
     ApiModule,
-    TerminusModule
+    TerminusModule,
+    InternalCacheModule,
   ],
   controllers: [HealthController],
 })
