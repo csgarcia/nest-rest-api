@@ -1,6 +1,6 @@
 ## Description
 
-Project build for **Tekton** challenge, this is based on [Nest](https://github.com/nestjs/nest) framework, 
+Project build as a example, this is based on [Nest](https://github.com/nestjs/nest) framework, 
 Please make sure to check the following steps and information to run the project locally without issues 
 
 ## Dependencies
@@ -11,10 +11,10 @@ Node version v14.18.0
 
 ###### Database configuration
 Create a database in local enviroment with the following data
-* DB name: **tekton**
+* DB name: **test**
 * Create a user for database
-  * username: **tekton**
-  * password: **tekton**
+  * username: **test**
+  * password: **test**
   * role: **dbOwner**            
 
 Install npm dependencies 
@@ -26,7 +26,7 @@ Create .env file on project root with the following data:
 
 | Variable | Dev value | Description
 | :---: | :---: | :---: |
-| DB_CONNECTION | mongodb://tekton:tekton@localhost/tekton | Mongodb string connection |
+| DB_CONNECTION | mongodb://test:test@localhost/test | Mongodb string connection |
 | EXTERNAL_PRODUCT_API | https://61cc0fd9198df60017aebe51.mockapi.io | External api to get product mock data |
 | TOKEN | someToken | Token to check on headers requests to api usage |
 
@@ -46,7 +46,7 @@ $ npm run test
 $ npm run test:cov
 ```
 
-About practices solving tekton challenge
+About used practices
 1. For logging, I implemented a middleware that write on a logs.txt file on root module (it's not necessary to create it manually)
 2. Check modules schemas to see properties to map in database
 3. There is an external http call in src/implementation/implementation.service.ts make sure to set the EXTERNAL_PRODUCT_API env var to correct usage
